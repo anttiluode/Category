@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Category</title>
+<link rel="icon" href="data:,">
+<style>
+:root{
+  --bg:#f6f4ef; --panel:#fffdf8; --ink:#1f1d1a; --muted:#6e6a62; --line:#e3ded3;
+  --accent:#2f6f5e; --accent-soft:#dcebe5; --warm:#b4542f; --warm-soft:#f4e0d6;
+  --yes:#2f7a55; --no:#b2452f; --bar:#d9d3c6;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#171614; --panel:#201e1b; --ink:#ece8e0; --muted:#a39d92; --line:#36332e;
+    --accent:#6cbfa4; --accent-soft:#1f3a32; --warm:#e08a62; --warm-soft:#3d2a20;
+    --yes:#6cc596; --no:#e57a62; --bar:#3a3631; }
+}
+*{box-sizing:border-box}
+input[type=range],input[type=checkbox]{accent-color:var(--accent)}
+.chart{max-width:620px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+header{padding:22px 24px 8px;max-width:1100px;margin:auto}
+h1{margin:0;font:600 26px/1.1 Georgia,"Times New Roman",serif;letter-spacing:.2px}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.info{font:12px var(--mono);color:var(--muted);margin-top:6px}
+main{max-width:1100px;margin:auto;padding:8px 24px 60px}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:10px 0 18px;flex-wrap:wrap}
+nav button{background:none;border:none;padding:10px 14px;font:inherit;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.tab{display:none}.tab.on{display:block}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:240px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit}
+input[type=number]{width:80px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit}
+button.go{padding:10px 16px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+button.alt{padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.chip{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--ink);cursor:pointer;border:none}
+.hint{color:var(--muted);font-size:13px;margin:6px 0 0}
+label.opt{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.3px;color:var(--muted)}
+.big{font:600 30px/1.1 Georgia,serif;margin:2px 0 8px}
+.desc{font:17px/1.5 Georgia,serif;font-style:italic}
+.bar{display:grid;grid-template-columns:110px 1fr 62px;gap:8px;align-items:center;font-size:13px;margin:4px 0}
+.bar .t{font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .v{text-align:right;font-family:var(--mono);color:var(--muted)}
+.track{height:10px;background:var(--bar);border-radius:5px;position:relative;overflow:hidden}
+.fill{position:absolute;top:0;bottom:0;border-radius:5px}
+.mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted);opacity:.5}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:500}
+td.n{font-family:var(--mono);text-align:right}
+tr.odd td{background:var(--warm-soft)}
+.err{color:var(--no);margin-top:12px}
+.busy{color:var(--muted);margin-top:12px;font-size:13px}
+.wlist{display:grid;gap:8px;margin-top:10px}
+.wrow{display:grid;grid-template-columns:120px 1fr 52px;gap:10px;align-items:center}
+.wrow input[type=range]{width:100%}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+.warn{color:var(--warm)}
+svg text{fill:var(--muted);font:11px var(--mono)}
+footer{max-width:1100px;margin:auto;padding:0 24px 30px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cate<span>gory</span></h1>
+  <div class="sub">Average, blend and bend a frozen model's word states, then ask it what it is holding.</div>
+  <div class="info" id="info">connecting…</div>
+</header>
+<main>
+<nav>
+  <button data-t="share" class="on">Common thread</button>
+  <button data-t="blend">Blend</button>
+  <button data-t="car">Caricature</button>
+  <button data-t="formula">Formula</button>
+</nav>
+
+<section class="tab on" id="t-share">
+  <div class="row">
+    <input type="text" id="s-words" value="piano, guitar, drum, violin" placeholder="words, separated by commas or spaces">
+    <button class="go" id="s-go">What do they share?</button>
+    <button class="alt" id="s-odd">Odd one out</button>
+  </div>
+  <div class="chips" data-for="s-words">
+    <button class="chip">piano, guitar, drum, violin</button>
+    <button class="chip">oak, pine, maple, elm</button>
+    <button class="chip">knife, glass, thorn, needle</button>
+    <button class="chip">sun, fire, lava, stove</button>
+    <button class="chip">piano, guitar, drum, hammer</button>
+    <button class="chip">brick, hammer, book, rock</button>
+  </div>
+  <p class="hint">All the words' states are averaged into the empty slot <code>Item: thing</code>. Qwen never sees the words themselves.</p>
+  <div id="s-out"></div>
+</section>
+
+<section class="tab" id="t-blend">
+  <div class="row">
+    <input type="text" id="b-words" value="owl, eagle" placeholder="two or more words">
+    <button class="alt" id="b-set">Set words</button>
+    <button class="go" id="b-go">Blend</button>
+  </div>
+  <div class="wlist" id="b-weights"></div>
+  <p class="hint">Weights are normalised to sum to 1. A 50/50 blend often rejects both names while keeping the kind.</p>
+  <div id="b-out"></div>
+</section>
+
+<section class="tab" id="t-car">
+  <div class="row">
+    <input type="text" id="c-word" value="maple" style="max-width:180px" placeholder="word">
+    <input type="text" id="c-refs" value="oak, pine, elm, cedar" placeholder="its kin (reference words)">
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label class="opt">α <input type="range" id="c-alpha" min="-1" max="3" step="0.25" value="1"></label>
+    <span id="c-alpha-v" style="font-family:var(--mono)">1.00</span>
+    <button class="go" id="c-go">Caricature</button>
+  </div>
+  <p class="hint">state = word + α · (word − average of its kin). α = −1 is the kin's average, 0 the word itself, above 0 exaggerates what sets it apart.</p>
+  <div id="c-out"></div>
+</section>
+
+<section class="tab" id="t-formula">
+  <div class="row">
+    <input type="text" id="f-text" value="maple - [oak pine elm cedar] + [eagle owl crow]" placeholder="1.5*maple - 0.5*[oak pine elm] + bird">
+    <button class="go" id="f-go">Compute</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <label class="opt"><input type="checkbox" id="f-rescale" checked> rescale to a word's typical length</label>
+  </div>
+  <div class="chips" data-for="f-text">
+    <button class="chip">maple - [oak pine elm cedar] + [eagle owl crow]</button>
+    <button class="chip">piano - [piano guitar drum violin] + [hammer wrench drill]</button>
+    <button class="chip">king - man + woman</button>
+    <button class="chip">2*shark - fish</button>
+  </div>
+  <p class="hint">A word is its state; <code>[a b c]</code> is the average of a group; numbers are weights. Example: a maple's private part put on a bird's core.</p>
+  <div id="f-out"></div>
+</section>
+
+<div class="row" style="margin-top:22px">
+  <label class="opt"><input type="checkbox" id="o-desc" checked> generate a description</label>
+  <label class="opt">temperature <input type="number" id="o-temp" value="0" min="0" max="2" step="0.1"></label>
+</div>
+</main>
+<footer>
+Numbers are yes-minus-no evidence in nats, minus the same for an empty slot. Positive means Qwen says yes more than it would for "thing". Words split into several tokens are clamped from their last token, which is only approximate.
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = (x, d=1) => (x>=0?'+':'') + x.toFixed(d);
+
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x===b));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.id==='t-'+b.dataset.t));
+});
+document.querySelectorAll('.chips').forEach(c => c.querySelectorAll('.chip').forEach(ch =>
+  ch.onclick = () => { $(c.dataset.for).value = ch.textContent; }));
+
+fetch('/api/info').then(r=>r.json()).then(i => {
+  $('info').textContent = `${i.model} · ${i.device} · ${i.layers} layers · clamp from embedding to layer ${i.band[1]} · slot "Item: ${i.slot}"`;
+}).catch(()=> $('info').textContent = 'server not reachable');
+
+function opts(){ return {describe: $('o-desc').checked, temperature: parseFloat($('o-temp').value)||0}; }
+
+async function call(name, body, out, btns){
+  btns.forEach(b=>b.disabled=true);
+  out.innerHTML = '<div class="busy">asking Qwen…</div>';
+  try{
+    const r = await fetch('/api/'+name, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error||r.status);
+    return j;
+  }catch(e){ out.innerHTML = `<div class="err">${esc(e.message)}</div>`; return null; }
+  finally{ btns.forEach(b=>b.disabled=false); }
+}
+
+function probBars(list, key='p'){
+  const m = Math.max(...list.map(x=>x[key]), 1e-9);
+  return list.map(x => `<div class="bar"><span class="t">${esc(JSON.stringify(x.t).slice(1,-1))}</span>
+    <div class="track"><div class="fill" style="left:0;width:${(100*x[key]/m).toFixed(1)}%;background:var(--accent)"></div></div>
+    <span class="v">${key==='p'?(100*x.p).toFixed(1)+'%':fmt(x.d)}</span></div>`).join('');
+}
+function evBars(ev){  // {label: {cal, raw}}
+  const vals = Object.values(ev).map(v=>Math.abs(v.cal));
+  const m = Math.max(...vals, 5);
+  return Object.entries(ev).map(([k,v]) => {
+    const w = 50*Math.min(Math.abs(v.cal),m)/m;
+    const left = v.cal>=0 ? 50 : 50-w;
+    return `<div class="bar"><span class="t">${esc(k)}</span><div class="track"><div class="mid"></div>
+      <div class="fill" style="left:${left}%;width:${w}%;background:${v.cal>=0?'var(--yes)':'var(--no)'}"></div></div>
+      <span class="v">${fmt(v.cal)}</span></div>`;
+  }).join('');
+}
+function multiTok(words){
+  const m = (words||[]).filter(w=>w.ntok>1);
+  return m.length ? `<div class="note warn">Split into several tokens (approximate): ${m.map(w=>esc(w.word)+' ('+w.ntok+')').join(', ')}</div>` : '';
+}
+function kindCard(k, title='What kind of thing is it?'){
+  return `<div class="card"><h3>${title}</h3><div class="big">${esc(k.word)}</div>${probBars(k.top.slice(0,6))}</div>
+    <div class="card"><h3>Most raised vs. empty slot</h3>${probBars(k.boosted.slice(0,6),'d')}
+    <div class="note">log-probability gained compared with "Item: thing" alone</div></div>`;
+}
+function descCard(d){ return d===undefined ? '' : `<div class="card"><h3>Qwen describes the slot</h3><div class="desc">${d?'“'+esc(d)+'”':'(no text)'}</div></div>`; }
+const secs = j => `<div class="note">${j.seconds}s</div>`;
+
+// ---- common thread
+$('s-go').onclick = async () => {
+  const out = $('s-out');
+  const j = await call('share', {words:$('s-words').value, ...opts()}, out, [$('s-go'),$('s-odd')]);
+  if(!j) return;
+  const alone = j.alone.map(a=>`<tr><td>${esc(a.word)}</td><td>${esc(a.kind)}</td><td class="n">${(100*a.top[0].p).toFixed(0)}%</td></tr>`).join('');
+  out.innerHTML = `<div class="grid">${kindCard(j.kind, 'Together they are a…')}${descCard(j.description)}
+    <div class="card"><h3>Is the average still each word?</h3>${evBars(j.members)}
+      <div class="note">Red: the averaged state rejects that name. Green: it still says yes.</div></div>
+    <div class="card"><h3>Each word alone</h3><table><tr><th>word</th><th>kind</th><th></th></tr>${alone}</table></div>
+  </div>${multiTok(j.words)}${secs(j)}`;
+};
+$('s-odd').onclick = async () => {
+  const out = $('s-out');
+  const j = await call('odd', {words:$('s-words').value}, out, [$('s-go'),$('s-odd')]);
+  if(!j) return;
+  const rows = j.rows.map((r,i)=>`<tr class="${i===0?'odd':''}"><td>${esc(r.word)}</td><td>${esc(r.others_kind)}</td>
+    <td class="n">${fmt(r.word_is_kind)}</td><td class="n">${fmt(r.others_are_kind)}</td></tr>`).join('');
+  out.innerHTML = `<div class="grid"><div class="card" style="grid-column:1/-1"><h3>Odd one out</h3>
+    <div class="big">${esc(j.odd)}</div>
+    <table><tr><th>left out</th><th>the others are a…</th><th style="text-align:right">left-out word is that</th><th style="text-align:right">others are that</th></tr>${rows}</table>
+    <div class="note">Each word is left out in turn. The others' average names a kind; then the left-out word alone is asked whether it is that kind. Lowest evidence is the odd one.</div>
+  </div></div>${secs(j)}`;
+};
+
+// ---- blend
+function setWeights(){
+  const ws = $('b-words').value.split(/,|\s+/).map(s=>s.trim()).filter(Boolean);
+  $('b-weights').innerHTML = ws.map((w,i)=>`<div class="wrow"><span>${esc(w)}</span>
+    <input type="range" min="0" max="1" step="0.05" value="${(1/ws.length).toFixed(2)}" data-w="${esc(w)}">
+    <span class="v" style="font-family:var(--mono)">${(1/ws.length).toFixed(2)}</span></div>`).join('');
+  $('b-weights').querySelectorAll('input').forEach(r=> r.oninput = () => r.nextElementSibling.textContent = (+r.value).toFixed(2));
+}
+$('b-set').onclick = setWeights; setWeights();
+$('b-go').onclick = async () => {
+  const rs = [...$('b-weights').querySelectorAll('input')];
+  if(!rs.length) setWeights();
+  const words = [...$('b-weights').querySelectorAll('input')].map(r=>r.dataset.w);
+  const weights = [...$('b-weights').querySelectorAll('input')].map(r=>+r.value);
+  const out = $('b-out');
+  const j = await call('blend', {words:words.join(', '), weights, ...opts()}, out, [$('b-go')]);
+  if(!j) return;
+  out.innerHTML = `<div class="grid">${kindCard(j.kind,'The blend is a…')}${descCard(j.description)}
+    <div class="card"><h3>Does the blend still say each name?</h3>${evBars(j.members)}</div></div>${multiTok(j.words)}${secs(j)}`;
+};
+
+// ---- caricature
+$('c-alpha').oninput = () => $('c-alpha-v').textContent = (+$('c-alpha').value).toFixed(2);
+function sweepChart(sw, word, kind){
+  const W=520,H=230,P=40;
+  const xs = sw.map(s=>s.alpha), ys = sw.flatMap(s=>[s.word,s.kind]);
+  const x0=Math.min(...xs),x1=Math.max(...xs), y0=Math.min(...ys,0), y1=Math.max(...ys,0);
+  const X=a=>P+(W-2*P)*(a-x0)/(x1-x0), Y=v=>H-P+-(H-2*P)*(v-y0)/((y1-y0)||1);
+  const line=(k,c)=>`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${sw.map(s=>X(s.alpha)+','+Y(s[k])).join(' ')}"/>`+
+     sw.map(s=>`<circle cx="${X(s.alpha)}" cy="${Y(s[k])}" r="3" fill="${c}"/>`).join('');
+  const ticks = xs.map(a=>`<text x="${X(a)}" y="${H-P+16}" text-anchor="middle">${a}</text>`).join('');
+  const yt=[y0,(y0+y1)/2,y1].map(v=>`<text x="${P-6}" y="${Y(v)+4}" text-anchor="end">${v.toFixed(1)}</text>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%">${yt}
+    <line x1="${P}" x2="${W-P}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--line)"/>
+    <line x1="${X(0)}" x2="${X(0)}" y1="${P/2}" y2="${H-P}" stroke="var(--line)" stroke-dasharray="3 3"/>
+    ${line('word','var(--warm)')}${line('kind','var(--accent)')}${ticks}
+    <text x="${W-P}" y="${H-4}" text-anchor="end">α</text>
+    <text x="${P}" y="14" style="fill:var(--warm)">is it ${esc(word)}?</text>
+    <text x="${P+190}" y="14" style="fill:var(--accent)">is it ${esc(kind)}?</text></svg>`;
+}
+$('c-go').onclick = async () => {
+  const out = $('c-out');
+  const j = await call('caricature', {word:$('c-word').value, refs:$('c-refs').value, alpha:+$('c-alpha').value, ...opts()}, out, [$('c-go')]);
+  if(!j) return;
+  out.innerHTML = `<div class="grid">${kindCard(j.kind, `At α = ${j.alpha} it is a…`)}${descCard(j.description)}
+    <div class="card" style="grid-column:1/-1"><h3>Identity versus kind as α moves</h3>${sweepChart(j.sweep, j.word, j.ref_kind)}
+    <div class="note">Left of the dashed line the word melts into its kin's average; right of it the word is exaggerated. The kin's kind ("${esc(j.ref_kind)}") is named by the model from their average.</div></div>
+  </div>${secs(j)}`;
+};
+
+// ---- formula
+$('f-go').onclick = async () => {
+  const out = $('f-out');
+  const j = await call('formula', {formula:$('f-text').value, rescale:$('f-rescale').checked, ...opts()}, out, [$('f-go')]);
+  if(!j) return;
+  const terms = j.terms.map(t=>`${fmt(t.coef,2)} × ${t.group.length>1?'['+esc(t.group.join(' '))+']':esc(t.group[0])}`).join('  ');
+  out.innerHTML = `<div class="note" style="font-family:var(--mono)">${terms}</div><div class="grid">${kindCard(j.kind,'The result is a…')}${descCard(j.description)}
+    <div class="card"><h3>Does it say each word?</h3>${evBars(j.members)}</div></div>${multiTok(j.words)}${secs(j)}`;
+};
+document.querySelectorAll('input[type=text]').forEach(i => i.addEventListener('keydown', e => {
+  if(e.key==='Enter'){ const b = i.closest('.tab').querySelector('button.go'); b && b.click(); }
+}));
+</script>
+</body>
+</html>
