@@ -238,7 +238,7 @@ $('s-odd').onclick = async () => {
 
 // ---- blend
 function setWeights(){
-  const ws = $('b-words').value.split(/,|\s+/).map(s=>s.trim()).filter(Boolean);
+  const raw = $('b-words').value; const ws = (raw.includes(',') ? raw.split(',') : raw.split(/\s+/)).map(s=>s.trim()).filter(Boolean);
   $('b-weights').innerHTML = ws.map((w,i)=>`<div class="wrow"><span>${esc(w)}</span>
     <input type="range" min="0" max="1" step="0.05" value="${(1/ws.length).toFixed(2)}" data-w="${esc(w)}">
     <span class="v" style="font-family:var(--mono)">${(1/ws.length).toFixed(2)}</span></div>`).join('');
