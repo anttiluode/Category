@@ -1,5 +1,7 @@
 # Category
 
+![pic](pic.png)
+
 A live window into a frozen Qwen. Type words. Their hidden states are averaged, blended or combined, written into an empty slot, and then Qwen is asked what it is holding.
 
 It is the RakeisuusClaude result turned into a tool. There, averaging a word's state with its siblings made the word's identity fade while its kind got louder (all 22 held-out leaves, against 0 of 22 for an equal-size random move). Here you can try that on any words you like.
